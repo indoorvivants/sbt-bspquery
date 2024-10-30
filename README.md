@@ -20,6 +20,13 @@ add to your `project/plugins.sbt` (find version from badge above):
 addSbtPlugin("com.indoorvivants" % "sbt-bspquery" % "<VERSION>")
 ```
 
+create your query file to test:
+
+**.bspquery**
+```
+platform=jvm && scalaBinary=2.13
+```
+
 ## Configuration
 
 The plugin automatically detects a `.bspquery` file at the root folder.
