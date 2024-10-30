@@ -21,6 +21,8 @@ lazy val publishing = Seq(
   sonatypeProfileName := "com.indoorvivants"
 )
 
+inThisBuild(publishing)
+
 val V = new {
   val scala213 = "2.13.12"
   val scala212 = "2.12.18"
