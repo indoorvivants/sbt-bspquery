@@ -1,4 +1,6 @@
-# BPS Query - limit the projects imported in Metals
+# BSP Query - limit the projects imported in Metals
+
+[BSP](https://build-server-protocol.github.io/docs/specification) | [Metals](https://scalameta.org/metals/) | [SBT](https://www.scala-sbt.org/) | [sbt-projectmatrix](https://github.com/sbt/sbt-projectmatrix/)
 
 This project attempts to solve an existing problem in large SBT 
 projects that use sbt-projectmatrix - large matrices of platforms and scala versions
