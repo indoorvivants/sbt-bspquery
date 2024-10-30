@@ -22,6 +22,7 @@ inThisBuild(
 val V = new {
   val scala213 = "2.13.12"
   val scala212 = "2.12.18"
+  val munit = "1.0.2"
 }
 
 lazy val root =
@@ -35,7 +36,8 @@ lazy val core = projectMatrix
   .in(file("mod/core"))
   .jvmPlatform(scalaVersions = Seq(V.scala212, V.scala213))
   .settings(
-    name := "bspquery-core"
+    name := "bspquery-core",
+    libraryDependencies += "org.scalameta" %% "munit" % V.munit % Test
   )
 
 lazy val `sbt-plugin` = project

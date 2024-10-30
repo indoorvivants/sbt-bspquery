@@ -41,17 +41,15 @@ object QueryAST {
 
     def _shouldConsume(expected: String) = {
       val startPosition = index
-      assert(
-        _consume(expected),
-        s"Expected `$expected` at position $startPosition"
-      )
+      if (!_consume(expected))
+        _err(s"Expected `$expected` at position $startPosition")
     }
 
     def keyName() =
       _consumeWhile(_.isLetter)
 
     def keyValue() =
-      _consumeWhile(!_.isWhitespace)
+      _consumeWhile(c => !(c.isWhitespace || c == ')' || c == '('))
 
     def _reachedEnd() = {
       val lastIndex = index
@@ -78,24 +76,30 @@ object QueryAST {
 
     def expression(): QueryAST = {
       _skipWS()
-      if (_reachedEnd()) Empty
-      else if (_currentChar().isLetter) { // KV pair
-        val key = keyName()
-        _shouldConsume("=")
-        val value = keyValue()
+      val res =
+        if (_reachedEnd()) Empty
+        else if (_currentChar().isLetter) { // KV pair
+          val key = keyName()
+          _shouldConsume("=")
+          val value = keyValue()
 
-        val kv = KV(key, value)
+          val kv = KV(key, value)
 
-        if (_consume("&&")) { // "AND"
-          AND(kv, expression())
-        } else if (_consume("||")) {
-          OR(kv, expression())
-        } else {
-          if (_reachedEnd()) kv
-          else _err(s"Expected end of expression at $index")
-        }
+          if (_consume("&&")) { // "AND"
+            AND(kv, expression())
+          } else if (_consume("||")) {
+            OR(kv, expression())
+          } else kv
 
-      } else Empty
+        } else if (_currentChar() == '(') {
+          _shouldConsume("(")
+          val expr = expression()
+          _shouldConsume(")")
+
+          expr
+        } else _err(s"Unexpected character `${_currentChar()}`")
+
+      res
     }
 
     Try(expression())
