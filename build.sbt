@@ -12,11 +12,13 @@ inThisBuild(
         url("https://blog.indoorvivants.com")
       )
     ),
-    version := (if (!sys.env.contains("CI")) "dev" else version.value),
-    crossScalaVersions := Nil,
-    organization := "com.indoorvivants",
-    sonatypeProfileName := "com.indoorvivants"
+    version := (if (!sys.env.contains("CI")) "dev" else version.value)
   )
+)
+
+lazy val publishing = Seq(
+  organization := "com.indoorvivants",
+  sonatypeProfileName := "com.indoorvivants"
 )
 
 val V = new {
@@ -35,6 +37,7 @@ lazy val root =
 lazy val core = projectMatrix
   .in(file("mod/core"))
   .jvmPlatform(scalaVersions = Seq(V.scala212, V.scala213))
+  .settings(publishing)
   .settings(
     name := "bspquery-core",
     libraryDependencies += "org.scalameta" %% "munit" % V.munit % Test
@@ -44,6 +47,7 @@ lazy val `sbt-plugin` = project
   .in(file("mod/sbt-plugin"))
   .dependsOn(core.jvm(V.scala212))
   .enablePlugins(ScriptedPlugin, SbtPlugin)
+  .settings(publishing)
   .settings(
     addSbtPlugin("com.eed3si9n" % "sbt-projectmatrix" % "0.9.2"),
     name := "sbt-bspquery",
