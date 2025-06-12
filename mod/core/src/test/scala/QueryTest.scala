@@ -11,6 +11,26 @@ class QueryTest extends FunSuite {
       )
     )
     assertEquals(
+      parseOrThrow("(platform=jvm && scalaBinary=3) || platform=sjs"),
+      OR(
+        AND(KV("platform", "jvm"), KV("scalaBinary", "3")),
+        KV("platform", "sjs")
+      )
+    )
+    assertEquals(
+      parseOrThrow(
+        "(platform=jvm && scalaBinary=3) || (platform=sjs && (scalaBinary=3 || scalaBinary=2.13)))"
+      ),
+      OR(
+        AND(KV("platform", "jvm"), KV("scalaBinary", "3")),
+        AND(
+          KV("platform", "sjs"),
+          OR(KV("scalaBinary", "3"), KV("scalaBinary", "2.13"))
+        )
+      )
+    )
+
+    assertEquals(
       parseOrThrow("platform=jvm && scalaBinary=2.13"),
       AND(KV("platform", "jvm"), KV("scalaBinary", "2.13"))
     )

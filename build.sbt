@@ -24,9 +24,9 @@ lazy val publishing = Seq(
 inThisBuild(publishing)
 
 val V = new {
-  val scala213 = "2.13.12"
-  val scala212 = "2.12.18"
-  val munit = "1.0.2"
+  val scala213 = "2.13.16"
+  val scala212 = "2.12.20"
+  val munit = "1.1.1"
 }
 
 lazy val root =

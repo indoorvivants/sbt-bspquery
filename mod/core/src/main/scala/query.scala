@@ -74,32 +74,38 @@ object QueryAST {
       sys.error(s"Parsing error:\n$query\n$pointer\n[$msg]")
     }
 
-    def expression(): QueryAST = {
+    def expression(): QueryAST = orExpression()
+
+    def orExpression(): QueryAST = {
+      var left = andExpression()
+      while (_consume("||")) {
+        left = OR(left, andExpression())
+      }
+      left
+    }
+
+    def andExpression(): QueryAST = {
+      var left = primaryExpression()
+      while (_consume("&&")) {
+        left = AND(left, primaryExpression())
+      }
+      left
+    }
+
+    def primaryExpression(): QueryAST = {
       _skipWS()
-      val res =
-        if (_reachedEnd()) Empty
-        else if (_currentChar().isLetter) { // KV pair
-          val key = keyName()
-          _shouldConsume("=")
-          val value = keyValue()
-
-          val kv = KV(key, value)
-
-          if (_consume("&&")) { // "AND"
-            AND(kv, expression())
-          } else if (_consume("||")) {
-            OR(kv, expression())
-          } else kv
-
-        } else if (_currentChar() == '(') {
-          _shouldConsume("(")
-          val expr = expression()
-          _shouldConsume(")")
-
-          expr
-        } else _err(s"Unexpected character `${_currentChar()}`")
-
-      res
+      if (_reachedEnd()) Empty
+      else if (_currentChar().isLetter) { // KV pair
+        val key = keyName()
+        _shouldConsume("=")
+        val value = keyValue()
+        KV(key, value)
+      } else if (_currentChar() == '(') {
+        _shouldConsume("(")
+        val expr = orExpression()
+        _shouldConsume(")")
+        expr
+      } else _err(s"Unexpected character `${_currentChar()}`")
     }
 
     Try(expression())
